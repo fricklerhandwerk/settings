@@ -1,8 +1,12 @@
 { pkgs, ... }:
+with builtins;
+with lib;
 {
   home.packages = with pkgs; [
     dmenu
     qutebrowser
+    pass
+    gnupg
   ];
   xsession = {
     enable = true;
@@ -21,4 +25,5 @@
       '';
     };
   };
+  services.gpg-agent.enable = true;
 }
