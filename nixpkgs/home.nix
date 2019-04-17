@@ -17,7 +17,7 @@ with lib;
         import XMonad
         import XMonad.Util.EZConfig(additionalKeys)
         main = xmonad $ defaultConfig
-          { terminal = "uxterm -fa 'Ubuntu Mono'"
+          { terminal = "uxterm -fa 'Ubuntu Mono' -ls -xrm 'UXTerm*selectToClipboard: true'"
           , borderWidth = 3
 	  , focusFollowsMouse = False
           } `additionalKeys`
