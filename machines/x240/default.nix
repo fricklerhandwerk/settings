@@ -11,7 +11,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.wireless.enable = true;
+  networking.networkmanager.enable = true;
 
   services.xserver = {
     enable = true;
