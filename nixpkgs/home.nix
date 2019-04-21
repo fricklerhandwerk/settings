@@ -17,11 +17,12 @@ with lib;
         import XMonad
         import XMonad.Util.EZConfig(additionalKeys)
         main = xmonad $ defaultConfig
-          { terminal = "uxterm -fa 'Ubuntu Mono' -ls -xrm 'UXTerm*selectToClipboard: true'"
+          { modMask = mod4Mask
+	  , terminal = "uxterm -fa 'Ubuntu Mono' -ls -xrm 'UXTerm*selectToClipboard: true'"
           , borderWidth = 3
 	  , focusFollowsMouse = False
           } `additionalKeys`
-          [ ((mod1Mask, xK_Return), spawn "dmenu_run")
+          [ ((mod4Mask, xK_Return), spawn "dmenu_run")
           ]
       '';
     };
