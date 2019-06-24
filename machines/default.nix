@@ -18,4 +18,6 @@ with config;
     enable = true;
     nssmdns = true;
   };
+
+  programs.fish.enable = true;
 }
