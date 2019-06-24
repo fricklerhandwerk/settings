@@ -9,7 +9,6 @@ with config;
   environment.systemPackages = with pkgs; [
     neovim
     git
-    home-manager
     pulseaudio-ctl
   ];
 
