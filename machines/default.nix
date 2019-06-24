@@ -10,5 +10,6 @@ with config;
     neovim
     git
     home-manager
+    pulseaudio-ctl
   ];
 }
