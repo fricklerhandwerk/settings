@@ -4,15 +4,17 @@
     ../default.nix
   ];
 
+  # use closed-source drivers
+  nixpkgs.config.allowUnfree = true;
+
   services.xserver = {
     enable = true;
     displayManager.lightdm.enable = true;
     xkbOptions = "altwin:swap_lalt_lwin";
+    videoDriver = "nvidia";
   };
   i18n.consoleUseXkbConfig = true;
 
   hardware.pulseaudio.enable = true;
-
-  # install closed-source drivers for broadcom WLAN adapter
-  nixpkgs.config.allowUnfree = true;
+  hardware.opengl.driSupport32Bit = true;
 }
