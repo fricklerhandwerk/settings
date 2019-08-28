@@ -10,7 +10,6 @@ with config;
   environment.systemPackages = with pkgs; [
     neovim
     git
-    pulseaudio-ctl
   ];
 
   # resolve `.local` domains
