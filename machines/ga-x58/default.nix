@@ -8,7 +8,7 @@
     enable = true;
     displayManager.lightdm.enable = true;
     xkbOptions = "altwin:swap_lalt_lwin";
-    videoDriver = "nvidia";
+    videoDriver = "nvidiaLegacy390";
   };
   i18n.consoleUseXkbConfig = true;
 
