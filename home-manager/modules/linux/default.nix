@@ -5,12 +5,12 @@
     ./desktop-environment
     ./secrets.nix
     ./udiskie.nix
+    ./mount-afp.nix
     ./ssh-agent.nix
   ];
 
   home.packages = with pkgs; [
     acpi
-    afpfs-ng
   ];
 
   services.screen-locker = {
