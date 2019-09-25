@@ -24,4 +24,8 @@ with config;
   };
 
   programs.fish.enable = true;
+
+  systemd.extraConfig = ''
+    DefaultTimeoutStopSec=5s
+  '';
 }
