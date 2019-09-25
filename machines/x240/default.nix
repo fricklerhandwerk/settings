@@ -16,8 +16,15 @@ in
     ./backlight.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    timeout = 1;
+    systemd-boot = {
+      enable = true;
+      consoleMode = "max";
+      editor = false;
+    };
+    efi.canTouchEfiVariables = true;
+  };
 
   services.xserver = {
     enable = true;
