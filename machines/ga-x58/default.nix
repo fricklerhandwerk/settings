@@ -33,6 +33,7 @@
 
   # use closed-source drivers
   nixpkgs.config.allowUnfree = true;
+  networking.enableB43Firmware = true;
   hardware.pulseaudio.enable = true;
   hardware.opengl.driSupport32Bit = true;
 }
