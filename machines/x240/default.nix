@@ -22,7 +22,6 @@ in
       timeout = 1;
       efi.canTouchEfiVariables = true;
       grub = {
-        enable = true;
         efiSupport = true;
         device = "nodev";
         extraConfig = ''
