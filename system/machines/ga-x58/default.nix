@@ -1,7 +1,8 @@
 { config, pkgs,  ... }:
 {
   imports = [
-    ../default.nix
+    ../../common
+    # TODO: add hardware configuration
   ];
 
   boot = {

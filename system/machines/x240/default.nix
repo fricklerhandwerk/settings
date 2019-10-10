@@ -10,10 +10,11 @@ let
 in
 {
   imports = [
-    ../default.nix
+    ../../common
     thinkpad-x240
     ./audio.nix
     ./backlight.nix
+    ./hardware-configuration.nix
   ];
 
   boot = {

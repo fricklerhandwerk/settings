@@ -2,7 +2,7 @@
 with config;
 {
   imports = [
-    ./hardware-configuration.nix
+    ./nixos-rebuild.nix
     ../modules/home-config.nix
   ];
   system.stateVersion = "19.03";
