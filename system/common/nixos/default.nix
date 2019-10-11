@@ -1,0 +1,17 @@
+# pin NixOS version declaratively by letting `nixos-rebuild` call into this
+# custom entry point for `<nixpkgs/nixos>`. for details see
+# <https://github.com/NixOS/nixpkgs/issues/62832#issuecomment-531008247>.
+
+# ideally this would be the *only* entry point to each machine, but then
+# 1) this file is the same everywhere, as it imports the same relative paths
+# 2) since `nixos` lives in the same repository as `nixpkgs`, and
+#    `nixos-rebuild` searches `<nixpkgs/nixos>`, we have to point it at
+#    `machines/$machine/nixos`, which is annoying. that is also why this file
+#    lives in a sub-directory (slightly less annoying).
+
+{
+  system ? builtins.currentSystem,
+  configuration ? <nixos-config>,
+  ...
+}:
+import "${import ../nixpkgs.nix}/nixos" { inherit system configuration; }

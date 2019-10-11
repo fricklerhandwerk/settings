@@ -6,6 +6,10 @@ with config;
     ../modules/home-config.nix
   ];
   system.stateVersion = "19.03";
+  # having the date of the revision would be nice, but `builtins.fetchGit` does
+  # not export that attribute and there is no other meaningful way to get it
+  # without re-fetching a significant portion of the repository
+  system.nixos.versionSuffix = "-${(import ./nixpkgs.nix).shortRev}";
 
   environment.systemPackages = with pkgs; [
     neovim

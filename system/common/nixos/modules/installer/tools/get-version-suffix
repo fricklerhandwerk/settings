@@ -1,0 +1,4 @@
+# this file is a hack to suppress an unnecessary error message during
+# `nixos-rebuild`. the original script in `<nixpkgs/nixos>` tries to read
+# `.git`, which does not exist in the result of `fetchGit`, so it would just as
+# well output nothing.
