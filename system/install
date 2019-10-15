@@ -1,24 +1,23 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i fish -p fish -p git
 
-set dir (dirname (readlink -f (status -f)))/machines
+set current (dirname (readlink -f (status -f)))
+set machines $current/machines
 
-if test -d $dir/argv[1]
+if test -d $machines/argv[1]
   set machine $argv[1]
 else
   echo "specify a machine:"
-  for i in (ls -d $dir/*/)
+  for i in (ls -d $machines/*/)
     echo (basename $i)
   end
   exit 1
 end
 
-# `nix-shell` uses `$system` to denote the operating system, while
+# XXX: `nix-shell` uses `$system` to denote the operating system, while
 # `nixos-install` uses the same name as an option to use a system's derivation
 # for building. they do not match and we do not need the latter, therefore
 # unset.
 set -e system
 
-# TODO: this will only work reliably if the installation image has the same
-# version of `nixos` as the one against which the configuration is written.
-nixos-install -I nixos-config=$dir/$machine
+nixos-install -I nixpkgs=$current/common -I nixos-config=$machines/$machine
