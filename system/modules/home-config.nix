@@ -9,11 +9,16 @@ in
   options = {
     home-config.users = mkOption {
       description = "user's home config repository";
-      type = types.attrsOf (types.submodule {
+      type = types.attrsOf (types.submodule ({config, ...}: {
         options = {
-          repo = mkOption {
+          fetch = mkOption {
             type = types.str;
-            description = "git repository with user configuration";
+            description = "fetch URL for git repository with user configuration";
+          };
+          push = mkOption {
+            type = types.str;
+            default = config.fetch;
+            description = "push URL for git repository, if it differs";
           };
           branch = mkOption {
             type = types.str;
@@ -31,7 +36,7 @@ in
             description = "command to run in repository before login";
           };
         };
-      });
+      }));
     };
   };
   config = {
@@ -44,59 +49,55 @@ in
         git = "${pkgs.git}/bin/git";
         home = user: config.users.users.${user}.home;
       in
-      mapAttrs'
-        (user: cfg: nameValuePair (check user) {
-          description = "check home configuration for ${user}";
-          wantedBy = [ "multi-user.target" ];
-          unitConfig = {
-            # path must be absolute!
-            # <https://www.freedesktop.org/software/systemd/man/systemd.unit.html#ConditionArchitecture=>
-            ConditionPathExists = "${home user}/${cfg.path}/.git";
-          };
-          serviceConfig = {
-            User = user;
-            SyslogIdentifier = check user;
-            # systemd docs say that not specifying `Type` and `ExecStart` implies
-            # `Type=oneshot`, but in reality it still complains if `ExecStart` is
-            # not defined, even if `Type=oneshot` is explicitly set.
-            # <https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=>
-            Type = "oneshot";
-            ExecStart = "${coreutils}/bin/true";
-          };
-        })
-        users //
-      mapAttrs'
-        (user: cfg: nameValuePair (initialise user) {
-          description = "initialise home-manager configuration for ${user}";
-          # do not allow login before setup is finished. after first boot the
-          # process takes a long time, and the user would log into a broken
-          # environment.
-          # let display manager wait in graphical setups.
-          before = [ "systemd-user-sessions.service" ] ++ optional config.services.xserver.enable "display-manager.service";
-          # `nix-daemon` and `network-online` are required under the assumption
-          # that installation performs `nix` operations and those usually need to
-          # fetch remote data
-          after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
-          requires = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
-          serviceConfig = {
-            User = user;
-            Type = "oneshot";
-            SyslogIdentifier = initialise user;
-            ExecStart = writeScript (initialise user)
-              ''
-                #! ${stdenv.shell} -el
-                mkdir -p ${home user}/${cfg.path}
-                cd ${home user}/${cfg.path}
-                ${git} init
-                ${git} remote add origin ${cfg.repo}
-                ${git} fetch
-                ${git} checkout ${cfg.branch} --force
-                ${home user}/${cfg.path}/${cfg.install}
-              '';
-          };
-        })
-        users
-    );
+      mapAttrs' (user: cfg: nameValuePair (check user) {
+        description = "check home configuration for ${user}";
+        wantedBy = [ "multi-user.target" ];
+        unitConfig = {
+          # path must be absolute!
+          # <https://www.freedesktop.org/software/systemd/man/systemd.unit.html#ConditionArchitecture=>
+          ConditionPathExists = "${home user}/${cfg.path}/.git";
+        };
+        serviceConfig = {
+          User = user;
+          SyslogIdentifier = check user;
+          # systemd docs say that not specifying `Type` and `ExecStart` implies
+          # `Type=oneshot`, but in reality it still complains if `ExecStart` is
+          # not defined, even if `Type=oneshot` is explicitly set.
+          # <https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=>
+          Type = "oneshot";
+          ExecStart = "${coreutils}/bin/true";
+        };
+      }) users //
+      mapAttrs' (user: cfg: nameValuePair (initialise user) {
+        description = "initialise home-manager configuration for ${user}";
+        # do not allow login before setup is finished. after first boot the
+        # process takes a long time, and the user would log into a broken
+        # environment.
+        # let display manager wait in graphical setups.
+        before = [ "systemd-user-sessions.service" ] ++ optional config.services.xserver.enable "display-manager.service";
+        # `nix-daemon` and `network-online` are required under the assumption
+        # that installation performs `nix` operations and those usually need to
+        # fetch remote data
+        after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
+        requires = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
+        serviceConfig = {
+          User = user;
+          Type = "oneshot";
+          SyslogIdentifier = initialise user;
+          ExecStart = writeScript (initialise user)
+            ''
+              #! ${stdenv.shell} -el
+              mkdir -p ${home user}/${cfg.path}
+              cd ${home user}/${cfg.path}
+              ${git} init
+              ${git} remote add origin ${cfg.fetch}
+              ${git} remote set-url origin --push ${cfg.push}
+              ${git} fetch
+              ${git} checkout ${cfg.branch} --force
+              ${home user}/${cfg.path}/${cfg.install}
+            '';
+        };
+      }) users);
 
     # this is a user-specific requirement, but needs to be supported by the
     # system for fully-automatic bootstrapping *before* first login. not sure
