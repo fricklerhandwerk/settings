@@ -13,7 +13,6 @@ Primary objective is to fully replace my macOS installations and the occasional 
 
 ## to do
 
-- create repo for system config
 - make system repo private (setup for easy installation, e.g. secrets in image or USB mount)
 - hardware-configuration under version control
 - slimmer interface to home-config (extend `user.users`)
