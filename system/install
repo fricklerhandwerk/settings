@@ -1,7 +1,8 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i fish -p fish -p git
 
-set current (dirname (readlink -f (status -f)))
+set current (dirname (readlink --canonicalize-existing (status current-filename)))
+
 set machines $current/machines
 
 if test -d $machines/argv[1]
@@ -20,4 +21,4 @@ end
 # unset.
 set -e system
 
-nixos-install -I nixpkgs=$current/common -I nixos-config=$machines/$machine
+nixos-install -I nixpkgs=../$current -I nixos-config=$machines/$machine

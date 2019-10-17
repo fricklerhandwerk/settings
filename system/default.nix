@@ -7,11 +7,12 @@
 # 2) since `nixos` lives in the same repository as `nixpkgs`, and
 #    `nixos-rebuild` searches `<nixpkgs/nixos>`, we have to point it at
 #    `machines/$machine/nixos`, which is annoying. that is also why this file
-#    lives in a sub-directory (slightly less annoying).
+#    lives at the toplevel and the repository around it is conveniently named
+#    `nixos` (only slightly less annoying).
 
 {
   system ? builtins.currentSystem,
   configuration ? <nixos-config>,
   ...
 }:
-import "${import ../nixpkgs.nix}/nixos" { inherit system configuration; }
+import "${import ./common/nixpkgs.nix}/nixos" { inherit system configuration; }
