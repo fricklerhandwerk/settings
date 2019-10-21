@@ -16,16 +16,11 @@ Download a NixOS installation image from <https://nixos.org/nixos/download.html>
 
 ## bootstrapping
 
-Boot from USB, format an installation partition [1] `/dev/sdXn` and run
+- boot NixOS image from USB
+- mount external storage with GPG private key to this repository
+- run `$external/bootstrap` and respond to password prompts
 
-    mount /dev/sdXn /mnt
-    # custom image:
-    git clone https://github.com/fricklerhandwerk/nixos
-    # vanilla image:
-    # nix-shell -p git --run "git clone https://github.com/fricklerhandwerk/nixos"
-    nixos/install <machine>
-
-After rebooting a user logging in should have its `home-manager` configuration active as specified in the `home-config` option.
+Keep the extranal storage plugged in. After rebooting a user logging in should have its `home-manager` configuration active as specified in the `home-config` option.
 
 [1]: Gentoo has a very extensive [manual](https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#Default:_Using_parted_to_partition_the_disk) to partitioning and formatting. I prefer their GPT partition layout over that from the [NixOS manual](https://nixos.org/nixos/manual/index.html#sec-installation-partitioning) as it allows easy switching of configurations both bootable on BIOS and UEFI systems.
 
@@ -44,7 +39,6 @@ Primary objective is to fully replace my macOS installations and the occasional 
 
 - make system repo private (setup for easy installation, e.g. secrets in image or USB mount)
   - add gpg signing key to USB stick, `git-remote-gcrypt` needs it
-  - write instructions to boostrap from encrypted repository
 - hardware-configuration under version control
 - slimmer interface to home-config (extend `user.users`)
 - hard disk partitioning/formatting as part of installation script
