@@ -20,10 +20,10 @@ Boot from USB, format an installation partition [1] `/dev/sdXn` and run
 
     mount /dev/sdXn /mnt
     # custom image:
-    git clone https://github.com/fricklerhandwerk/.config
+    git clone https://github.com/fricklerhandwerk/nixos
     # vanilla image:
-    # nix-shell -p git --run "git clone https://github.com/fricklerhandwerk/.config"
-    .config/install <machine>
+    # nix-shell -p git --run "git clone https://github.com/fricklerhandwerk/nixos"
+    nixos/install <machine>
 
 After rebooting a user logging in should have its `home-manager` configuration active as specified in the `home-config` option.
 
@@ -43,6 +43,8 @@ Primary objective is to fully replace my macOS installations and the occasional 
 ## to do
 
 - make system repo private (setup for easy installation, e.g. secrets in image or USB mount)
+  - add gpg signing key to USB stick, `git-remote-gcrypt` needs it
+  - write instructions to boostrap from encrypted repository
 - hardware-configuration under version control
 - slimmer interface to home-config (extend `user.users`)
 - hard disk partitioning/formatting as part of installation script

@@ -1,18 +1,68 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i fish -p fish -p git
 
-set current (dirname (readlink --canonicalize-existing (status current-filename)))
+# install NixOS configuration for given machine
 
+# implementation note: deliberately written batch-style without functions, for
+# better overview of a sequence of tasks
+
+argparse -n $self --min-args 1 --max-args 1 p/partition f/format r/root= -- $argv; or exit
+
+set self (status current-filename)
+set current (dirname (readlink --canonicalize-existing $self))
 set machines $current/machines
 
-if test -d $machines/argv[1]
-  set machine $argv[1]
-else
-  echo "specify a machine:"
+if not test -d $machines/$argv[1]
+  echo "specify a machine:" >&2
   for i in (ls -d $machines/*/)
-    echo (basename $i)
+    echo (basename $i) >&2
   end
   exit 1
+end
+
+set machine $argv[1]
+
+# TODO: get target disks/partitions/mount points from machine config, something like:
+# nix-instantiate --eval $machines/$machine/boot.nix -A fileSystems --strict --json | jq ...
+# don't forget swap and BIOS boot partitions!
+
+if $_flag_partition
+  # TODO: partition target disk. here we should use a default layout for all
+  # machines, such as the one described in [1].
+  # [1]: <https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#Default:_Using_parted_to_partition_the_disk>
+end
+
+if $_flag_format
+  # TODO: format target disk
+  # some file systems could be auto-formatted by NixOS [1], but this is not
+  # necessarily safe or useful for the purpose here
+  # [1]: <https://github.com/NixOS/nixpkgs/blob/release-19.09/nixos/modules/tasks/filesystems.nix#L79-L86>
+end
+
+set root /mnt; set -q $_flag_root; and set root $_flag_root
+# TODO: mount target partitions, this is just a safety stopgap
+if not mount | grep $root > /dev/null
+  echo "target partition not mounted under $root" >&2
+  exit 1
+end
+
+# move to and re-execute from target location to make this repository
+# available to our custom `nixos-rebuild` wrapper at runtime.
+# NOTE: target directory *must* be named `nixos` due to how the original
+# `nixos-rebuild` works.
+set target $root/etc/nixos
+if $current != $target
+      mkdir -p $target
+  and cp -r $current $target
+  and cd $target
+  and chown -R :wheel .
+  # fix group for new files with sticky bit
+  and chmod -R +s,g=rw,o= .
+  # set directory umask to x7x
+  and setfacl -d -m group::rwx .
+  or exit
+
+  exec $target/$self $argv
 end
 
 # XXX: `nix-shell` uses `$system` to denote the operating system, while
@@ -21,4 +71,4 @@ end
 # unset.
 set -e system
 
-nixos-install -I nixpkgs=../$current -I nixos-config=$machines/$machine
+nixos-install -I nixpkgs=../$current -I nixos-config=$machines/$machine --root $root
