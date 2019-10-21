@@ -1,0 +1,23 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i fish \
+# -p fish \
+# -p git \
+# -p gpg \
+# -p gitAndTools.gitRemoteGcrypt
+
+# bootstrap by running this script from USB stick with GPG keys to encrypted
+# repository with system configuration.
+
+# NOTE: if I ever implement the idea to keep a copy of this repository on the
+# secret storage, the following should just be part of the regular install
+# script.
+
+set current (dirname (readlink -f (status -f)))
+
+gpg --import $current/gpg/AE02F55D.asc --homedir (mktemp -d)
+
+set system (mktemp -d)
+git clone gcrypt::https://github.com/fricklerhandwerk/system $system
+
+$system/install
+
