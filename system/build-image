@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i fish -p fish -p git
 
-set current (dirname (readlink -f (status -f)))
+set current (dirname (readlink --canonicalize-existing (status current-filename))
 nix-build $current/common/iso.nix
