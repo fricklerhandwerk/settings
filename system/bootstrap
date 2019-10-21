@@ -14,10 +14,14 @@
 
 set current (dirname (readlink -f (status -f)))
 
-gpg --import $current/gpg/AE02F55D.asc --homedir (mktemp -d)
+gpg --import $current/gpg.asc --homedir (mktemp -d)
 
-set system (mktemp -d)
-git clone gcrypt::https://github.com/fricklerhandwerk/system $system
+set temp (mktemp -d)
+git clone gcrypt::https://github.com/fricklerhandwerk/nixos $temp
 
-$system/install
+# push over ssh for future use
+cd $temp
+git remote set-url --push origin gcrypt::git@github.com:fricklerhandwerk/nixos
+
+$temp/install
 
