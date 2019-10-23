@@ -37,8 +37,6 @@ Primary objective is to fully replace my macOS installations and the occasional 
 
 ## to do
 
-- make system repo private (setup for easy installation, e.g. secrets in image or USB mount)
-  - add gpg signing key to USB stick, `git-remote-gcrypt` needs it
 - hardware-configuration under version control
 - slimmer interface to home-config (extend `user.users`)
 - hard disk partitioning/formatting as part of installation script
