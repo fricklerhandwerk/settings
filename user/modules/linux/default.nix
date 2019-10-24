@@ -3,7 +3,6 @@
   imports = [
     ../.
     ./desktop-environment
-    ./secrets.nix
     ./udiskie.nix
     ./mount-afp.nix
     ./ssh-agent.nix
