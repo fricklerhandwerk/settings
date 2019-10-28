@@ -16,4 +16,5 @@
     enable = true;
     lockCmd = "${pkgs.xsecurelock}/bin/xsecurelock";
   };
+  xdg.enable = true;
 }
