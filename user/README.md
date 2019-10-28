@@ -28,3 +28,8 @@ Primary objective is to configure all my userspace software through `home-manage
 - switch user on lock screen
 - create minimal blog
 - create minimal game with graphics (try godot engine)
+
+## ideas for contributions
+
+- darwin packages: vlc, tor-browser-bundle-bin, qutebrowser, wineWow
+
