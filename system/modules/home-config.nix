@@ -46,7 +46,6 @@ in
         initialise = user: "home-config-init-${utils.escapeSystemdPath user}";
         check = user: "home-config-check-${utils.escapeSystemdPath user}";
         service = unit: "${unit}.service";
-        git = "${pkgs.git}/bin/git";
         home = user: config.users.users.${user}.home;
       in
       mapAttrs' (user: cfg: nameValuePair (check user) {
@@ -80,22 +79,23 @@ in
         # fetch remote data
         after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
         requires = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
+        path = [ git ];
         serviceConfig = {
           User = user;
           Type = "oneshot";
           SyslogIdentifier = initialise user;
-          ExecStart = writeScript (initialise user)
-            ''
-              #! ${stdenv.shell} -el
+          ExecStart = let
+            script = writeShellScriptBin (initialise user) ''
+              set -e
               mkdir -p ${home user}/${cfg.path}
               cd ${home user}/${cfg.path}
-              ${git} init
-              ${git} remote add origin ${cfg.fetch}
-              ${git} remote set-url origin --push ${cfg.push}
-              ${git} fetch
-              ${git} checkout ${cfg.branch} --force
+              git init
+              git remote add origin ${cfg.fetch}
+              git remote set-url origin --push ${cfg.push}
+              git fetch
+              git checkout ${cfg.branch} --force
               ${home user}/${cfg.path}/${cfg.install}
-            '';
+            ''; in "${script}bin/${(initialise user)}";
         };
       }) users);
 
