@@ -55,7 +55,7 @@ in
         unitConfig = {
           # path must be absolute!
           # <https://www.freedesktop.org/software/systemd/man/systemd.unit.html#ConditionArchitecture=>
-          ConditionPathExists = "${home user}/${cfg.path}/.git";
+          ConditionPathExists = "!${home user}/${cfg.path}/.git";
         };
         serviceConfig = {
           User = user;
