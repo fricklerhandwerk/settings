@@ -47,7 +47,7 @@ if not mount | grep $root > /dev/null
 end
 
 # move to and re-execute from target location to make this repository
-# available to our custom `nixos-rebuild` wrapper at runtime.
+# and its `nixpkgs` definition available to other tools at runtime.
 # NOTE: target directory *must* be named `nixos` due to how the original
 # `nixos-rebuild` works.
 set target $root/etc/nixos

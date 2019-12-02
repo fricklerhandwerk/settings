@@ -2,7 +2,6 @@
 with config;
 {
   imports = [
-    ./nixos-rebuild.nix
     ../modules/home-config.nix
   ];
   system.stateVersion = "19.03";
@@ -10,6 +9,13 @@ with config;
   # not export that attribute and there is no other meaningful way to get it
   # without re-fetching a significant portion of the repository
   system.nixos.versionSuffix = "-${(import ./nixpkgs.nix).shortRev}";
+
+  nix.nixPath = [
+    # NOTE: updated values are only available on a fresh user session
+    "nixpkgs=${(import ./nixpkgs.nix)}"
+    # XXX: spell out the filename for `nixos-rebuild edit` to work
+    "nixos-config=${toString ../machines}/${networking.hostName}/default.nix"
+  ];
 
   environment.systemPackages = with pkgs; [
     neovim
