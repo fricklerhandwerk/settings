@@ -37,7 +37,6 @@ Primary objective is to fully replace my macOS installations and the occasional 
 
 ## to do
 
-- hardware-configuration under version control
 - slimmer interface to home-config (extend `user.users`)
 - hard disk partitioning/formatting as part of installation script
 - add system closure to installation image (reduce time to first boot)

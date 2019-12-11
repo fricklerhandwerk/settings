@@ -1,19 +1,19 @@
 { config, lib, pkgs, ... }:
 {
-  nix.maxJobs = 4;
+  nix.maxJobs = lib.mkDefault 8;
   powerManagement.cpuFreqGovernor = "powersave";
 
   boot = {
     initrd.availableKernelModules = [
-      "xhci_pci"
+      "uhci_hcd"
       "ehci_pci"
       "ahci"
+      "xhci_pci"
+      "usbhid"
       "usb_storage"
       "sd_mod"
-      "rtsx_pci_sdmmc"
+      "sr_mod"
     ];
     kernelModules = [ "kvm-intel" ];
   };
-
-  hardware.enableRedistributableFirmware = true;
 }
