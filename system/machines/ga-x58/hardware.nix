@@ -1,6 +1,6 @@
-{ config, lib, pkgs, ... }:
+{ ... }:
 {
-  nix.maxJobs = lib.mkDefault 8;
+  nix.maxJobs = 8;
   powerManagement.cpuFreqGovernor = "powersave";
 
   boot = {

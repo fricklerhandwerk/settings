@@ -1,4 +1,4 @@
-{ config, pkgs,  ... }:
+{ pkgs, ... }:
 {
   programs.light.enable = true;
   services.actkbd = {
