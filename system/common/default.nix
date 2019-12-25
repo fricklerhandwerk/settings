@@ -20,6 +20,8 @@ with config;
   environment.systemPackages = with pkgs; [
     neovim
     git
+    # needed for `ssh` when using `kitty`
+    kitty.terminfo
   ];
 
   # resolve `.local` domains
