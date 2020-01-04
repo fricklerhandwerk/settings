@@ -1,28 +1,15 @@
+# configuration for linux machines
 { pkgs, ... }:
 {
   imports = [
-    ../.
-    ./desktop-environment
-    ./udiskie.nix
-    ./mount-afp.nix
-    ./ssh-agent.nix
-    ./wine.nix
+    ../common
   ];
 
-  home.packages = with pkgs;
-  let
-    tor-browser = unstable.tor-browser-bundle-bin.override
-      { mediaSupport = true; };
-  in [
+  # auto-mount external storage
+  services.udiskie.enable = true;
+  home.packages = with pkgs; [
     acpi
-    qutebrowser
-    vlc
-    tor-browser
+    # manually manage external storage if needed
+    udiskie
   ];
-
-  services.screen-locker = {
-    enable = true;
-    lockCmd = "${pkgs.xsecurelock}/bin/xsecurelock";
-  };
-  xdg.enable = true;
 }
