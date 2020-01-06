@@ -71,4 +71,5 @@ end
 # unset.
 set -e system
 
-nixos-install -I nixpkgs=../$current -I nixos-config=$machines/$machine --root $root
+# XXX: `nixos-install` overrides `-I nixos-config=...` with `$NIXOS_CONFIG`
+env NIXOS_CONFIG=$machines/$machine nixos-install -I nixpkgs=../$current  --root $root

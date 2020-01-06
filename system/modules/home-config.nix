@@ -73,6 +73,7 @@ in
         # process takes a long time, and the user would log into a broken
         # environment.
         # let display manager wait in graphical setups.
+        wantedBy = [ "multi-user.target" ];
         before = [ "systemd-user-sessions.service" ] ++ optional config.services.xserver.enable "display-manager.service";
         # `nix-daemon` and `network-online` are required under the assumption
         # that installation performs `nix` operations and those usually need to
@@ -95,7 +96,7 @@ in
               git fetch
               git checkout ${cfg.branch} --force
               ${home user}/${cfg.path}/${cfg.install}
-            ''; in "${script}bin/${(initialise user)}";
+            ''; in "${script}/bin/${(initialise user)}";
         };
       }) users);
 
