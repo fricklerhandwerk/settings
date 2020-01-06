@@ -34,6 +34,8 @@ Primary objective is to fully replace my macOS installations and the occasional 
 - nixpkgs: user-actkbd (fix pulseaudio)
 - nixpkgs: use `-I` values in `nixos-rebuild edit`
 - nix: export revision date in `builtins.fetchGit`
+- nixpkgs: do not override `nixos-config` with `$NIXOS_CONFIG`
+- nixpkgs: update `NIXOS_LUSTRATE` manual to use `nixos-install`
 
 ## to do
 
