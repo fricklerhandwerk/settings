@@ -6,9 +6,11 @@
 # implementation note: deliberately written batch-style without functions, for
 # better overview of a sequence of tasks
 
-argparse -n $self --min-args 1 --max-args 1 p/partition f/format r/root= -- $argv; or exit
 
 set self (status current-filename)
+
+argparse -n $self --min-args 1 --max-args 1 p/partition f/format r/root= -- $argv; or exit
+
 set current (dirname (readlink --canonicalize-existing $self))
 set machines $current/machines
 
