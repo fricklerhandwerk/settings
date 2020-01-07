@@ -50,6 +50,4 @@ Primary objective is to fully replace my macOS installations and the occasional 
 - hibernate on critical battery
 - hibernate after suspend
 - encrypted system partition
-- add home server to machine pool
-- add remote server to machine pool
 - manage machines with NixOps
