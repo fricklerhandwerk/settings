@@ -1,0 +1,51 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i fish -p fish -p coreutils -p openssh
+
+##### NixOS on cloud-interactive.de hosts
+
+## PREPARATION
+# 1. install Debian 10 as KVM guest
+# 2. `ssh-copy-id` your key to the machine and set up `ssh` to use the correct
+#    key with the machine
+
+set self (status current-filename)
+
+if not set -q argv[1]
+  echo "Usage: $self [<username>@]<host> <machine>" >&2
+  exit
+end
+
+set current (dirname (realpath $self))
+set machines $current/machines
+
+if not set -q argv[2]; or not test -d $machines/$argv[2]
+  echo "specify a machine:" >&2
+  for i in (ls -d $machines/*/)
+    echo (basename $i) >&2
+  end
+  exit 1
+end
+
+set target $argv[1]
+set machine $argv[2]
+set path /etc/nixos
+
+# check `ssh` connection
+if not ssh -qo "BatchMode=yes" $target exit
+  # FIXME: `ssh-copy-id` does not respect `~/.ssh/config`, so just doing
+  # `ssh-copy-id $target` cannot be expected to work. see this sad bug report:
+  # <http://lists.mindrot.org/pipermail/openssh-bugs/2014-September/013695.html>
+  # maybe I will some day submit a pull request to fix this, but for now just
+  # make sure you have key-based authentication working.
+  echo "Please set up `ssh` keys for $target with `ssh-copy-id`" >&2
+  exit
+end
+
+echo "mkdir -p $path" | ssh $target
+scp -r $current/* $target:$path
+
+# do some replacement magic to keep `nixify` generic
+cat $current/nixify | \
+sed "s#\(export NIXOS_CONFIG=\).*#\1$path/machines/$machine#" | \
+sed "s#nixos-install --root#nixos-install -I nixpkgs=/etc --root#" | \
+ssh $target

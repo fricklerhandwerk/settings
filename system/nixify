@@ -1,0 +1,105 @@
+#! /usr/bin/bash
+
+# install NixOS over Debian 10, following and simplifying
+# <https://nixos.org/nixos/manual/#sec-installing-from-other-distro>
+
+set -e -o pipefail
+
+network_config() {
+  # capture networking configuration from current machine.
+  # original: <https://github.com/elitak/nixos-infect/blob/master/nixos-infect>
+
+  # XXX: maybe better if we used procfs for all this, like here:
+  # <https://stackoverflow.com/a/14725655/5147619>
+  local IFS=$'\n'
+  eth0_name=$(ip address show | grep '^2:' | awk -F': ' '{print $2}')
+  eth0_ip4s=$(ip address show dev "$eth0_name" | grep 'inet ' | sed -r 's|.*inet ([0-9.]+)/([0-9]+).*|{ address="\1"; prefixLength=\2; }|')
+  eth0_ip6s=$(ip address show dev "$eth0_name" | grep 'inet6 ' | sed -r 's|.*inet6 ([0-9a-f:]+)/([0-9]+).*|{ address="\1"; prefixLength=\2; }|' || '')
+  gateway=$(ip route show dev "$eth0_name" | grep default | cut -d ' ' -f 3)
+  gateway6=$(ip -6 route show dev "$eth0_name" | grep default | cut -d ' ' -f 3 || true)
+  ether0=$(ip address show dev "$eth0_name" | grep link/ether | cut -d ' ' -f 6)
+
+  nameservers=($(grep ^nameserver /etc/resolv.conf | cut -f2 -d' '))
+  if [ "$eth0_name" = eth* ]; then
+    predictable_inames="usePredictableInterfaceNames = lib.mkForce false;"
+  else
+    predictable_inames="usePredictableInterfaceNames = lib.mkForce true;"
+  fi
+
+  cat << EOF
+{ lib, ... }: {
+  # This file was populated at runtime with the networking
+  # details gathered from the active system.
+  networking = {
+    nameservers = [$(for a in "${nameservers[@]}"; do echo -n "
+      \"$a\""; done)
+    ];
+    defaultGateway = "${gateway}";
+    defaultGateway6 = "${gateway6}";
+    dhcpcd.enable = false;
+    $predictable_inames
+    interfaces = {
+      $eth0_name = {
+        ipv4.addresses = [$(for a in "${eth0_ip4s[@]}"; do echo -n "
+          $a"; done)
+        ];
+        ipv6.addresses = [$(for a in "${eth0_ip6s[@]}"; do echo -n "
+          $a"; done)
+        ];
+        ipv4.routes = [ { address = "${gateway}"; prefixLength = 32; } ];
+        ipv6.routes = [ { address = "${gateway6}"; prefixLength = 32; } ];
+      };
+    };
+  };
+  services.udev.extraRules = ''
+    ATTR{address}=="${ether0}", NAME="${eth0_name}"
+  '';
+}
+EOF
+}
+
+hardware_config() {
+  config=$(nixos-generate-config --show-hardware-config)
+  # remove dependency on partition UUID. this may change for every fresh
+  # virtual machine.
+  uuid=$(echo "$config" | grep device | sed 's/.*device = "\(.*\)"\;/\1/')
+  partition=$(realpath $uuid)
+  line=$(echo "$config" | grep -n fileSystem | cut -f1 -d:)
+  echo "$config" | sed "s#$uuid#$partition#" | \
+  # IMPORTANT: add taget for boot loader. assumption: there is only one device,
+  # and the boot loader needs to go there.
+  sed "${line}i\\  boot.loader.grub.device = \"${partition//[[:digit:]]/}\";"
+}
+
+# `git` is required for `builtins.fetchGit`
+apt-get install -y curl git
+
+# XXX: this is something the `nix` installation script should be doing. see
+# this stalled pull request for more frustration:
+# <https://github.com/NixOS/nix/pull/1565>
+getent group | grep nixbld || groupadd nixbld -g 30000
+for i in {1..10}
+  do
+    getent passwd | grep nixbld$i || \
+    useradd -c "Nix build user $i" -d /var/empty -g nixbld -G nixbld \
+      -u `expr 30000 + $i` -M -N -r -s "$(which nologin)" nixbld$i
+  done
+
+curl https://nixos.org/nix/install | $SHELL
+
+source ~/.nix-profile/etc/profile.d/nix.sh
+
+nix-env -iE "_: with import <nixpkgs/nixos> { configuration = {}; }; \
+  with config.system.build; \
+  [ nixos-generate-config nixos-install nixos-enter ]"
+
+network_config > /etc/nixos/network-configuration.nix
+hardware_config > /etc/nixos/hardware-configuration.nix
+
+echo etc/nixos > /etc/NIXOS_LUSTRATE
+rm -rf /boot
+
+export NIXOS_CONFIG=/etc/nixos/configuration.nix
+nixos-install --root / --no-root-passwd
+
+reboot

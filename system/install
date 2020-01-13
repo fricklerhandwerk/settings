@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i fish -p fish -p git
+#! nix-shell -i fish -p fish -p coreutils -p git
 
 # install NixOS configuration for given machine
 
@@ -11,7 +11,7 @@ set self (status current-filename)
 
 argparse -n $self --min-args 1 --max-args 1 p/partition f/format r/root= -- $argv; or exit
 
-set current (dirname (readlink --canonicalize-existing $self))
+set current (dirname (realpath $self))
 set machines $current/machines
 
 if not test -d $machines/$argv[1]
