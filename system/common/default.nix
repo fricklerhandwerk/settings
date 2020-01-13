@@ -1,5 +1,4 @@
 { config, pkgs, ... }:
-with config;
 {
   imports = [
     ../modules/home-config.nix
@@ -14,7 +13,7 @@ with config;
     # NOTE: updated values are only available on a fresh user session
     "nixpkgs=${(import ./nixpkgs.nix)}"
     # XXX: spell out the filename for `nixos-rebuild edit` to work
-    "nixos-config=${toString ../machines}/${networking.hostName}/default.nix"
+    "nixos-config=${toString ../machines}/${config.networking.hostName}/default.nix"
   ];
 
   environment.systemPackages = with pkgs; [
@@ -24,13 +23,9 @@ with config;
     kitty.terminfo
   ];
 
-  # resolve `.local` domains
-  services.avahi = {
-    enable = true;
-    nssmdns = true;
-  };
-
   networking.networkmanager.enable = true;
+  # TODO: the bug where this line was missing is fixed in
+  # 19.09 - remove when upgrading.
   systemd.services.NetworkManager-wait-online = {
     wantedBy = [ "network-online.target" ];
   };

@@ -2,6 +2,7 @@
 {
   imports = [
     ../../common
+    ../../common/local.nix
     ./boot.nix
     ./audio.nix
     ./backlight.nix

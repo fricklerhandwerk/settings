@@ -2,6 +2,7 @@
 {
   imports = [
     ../../common
+    ../../common/local.nix
     ./hardware.nix
     ./boot.nix
   ];

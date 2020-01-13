@@ -2,13 +2,11 @@
 {
   imports = [
     ../../common
+    ../../common/local.nix
+    ../../common/server.nix
     ./boot.nix
     ./hardware.nix
   ];
-
-  services.openssh = {
-    enable = true;
-  };
 
   services.avahi = {
     publish = {
