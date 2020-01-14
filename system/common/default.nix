@@ -19,6 +19,7 @@
   environment.systemPackages = with pkgs; [
     neovim
     git
+    ntfs3g
     # needed for `ssh` when using `kitty`
     kitty.terminfo
   ];
