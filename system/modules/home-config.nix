@@ -78,7 +78,13 @@ in
         # fetch remote data
         after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
         requires = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
-        path = [ git ];
+        path = [
+          git
+          nix # for nix-shell
+        ];
+        environment = {
+          NIX_PATH = builtins.concatStringsSep ":" config.nix.nixPath;
+        };
         serviceConfig = {
           User = user.name;
           Type = "oneshot";
