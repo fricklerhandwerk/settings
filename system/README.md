@@ -39,7 +39,6 @@ Primary objective is to fully replace my macOS installations and the occasional 
 
 ## to do
 
-- slimmer interface to home-config (extend `user.users`)
 - hard disk partitioning/formatting as part of installation script
 - add system closure to installation image (reduce time to first boot)
 - include `home-manager` packages in installation image (reduce time to first login)

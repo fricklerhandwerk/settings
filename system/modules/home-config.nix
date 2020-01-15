@@ -1,63 +1,61 @@
-{ config, lib, pkgs, utils, ... }:
-with lib;
+{ config, lib, pkgs, utils,  ... }:
 with pkgs;
 let
-  # TODO: extend `config.users.users` to accomodate the new fields.
-  users = config.home-config.users;
-in
-{
-  options = {
-    home-config.users = mkOption {
-      description = "user's home config repository";
-      type = types.attrsOf (types.submodule ({config, ...}: {
-        options = {
-          fetch = mkOption {
-            type = types.str;
-            description = "fetch URL for git repository with user configuration";
-          };
-          push = mkOption {
-            type = types.str;
-            default = config.fetch;
-            description = "push URL for git repository, if it differs";
-          };
-          branch = mkOption {
-            type = types.str;
-            default = "master";
-            description = "branch in repository to clone";
-          };
-          path = mkOption {
-            type = types.str;
-            default = ".config";
-            description = "clone path for configuration repository, relative to user's $HOME";
-          };
-          install = mkOption {
-            type = types.str;
-            default = "install";
-            description = "command to run in repository before login";
-          };
-        };
-      }));
+  users = config.users.users;
+  home-config = with lib; with types; { config, ... }: {
+    options.config = {
+      description = "user's home configuration repository";
+      fetch = mkOption {
+        type = nullOr str;
+        default = null;
+        description = "fetch URL for git repository with user configuration";
+      };
+      push = mkOption {
+        type = nullOr str;
+        default = config.fetch;
+        description = "push URL for git repository, if it differs";
+      };
+      branch = mkOption {
+        type = str;
+        default = "master";
+        description = "branch in repository to clone";
+      };
+      path = mkOption {
+        type = str;
+        default = ".config";
+        description = "clone path for configuration repository, relative to user's $HOME"; };
+      install = mkOption {
+        type = str;
+        default = "./install";
+        description = "installation command";
+      };
     };
   };
-  config = {
-    # run get user configuration on startup
-    systemd.services = mkIf (users != { }) (
-      let
-        initialise = user: "home-config-init-${utils.escapeSystemdPath user}";
-        check = user: "home-config-check-${utils.escapeSystemdPath user}";
-        service = unit: "${unit}.service";
-        home = user: config.users.users.${user}.home;
-      in
-      mapAttrs' (user: cfg: nameValuePair (check user) {
-        description = "check home configuration for ${user}";
+in
+{
+  options = with lib; with types; {
+    users.users = mkOption {
+      type = loaOf (submodule home-config);
+    };
+  };
+  config = with builtins; with lib;
+    let
+      check = user: "home-config-check-${utils.escapeSystemdPath user.name}";
+      initialise = user: "home-config-initialise-${utils.escapeSystemdPath user.name}";
+      service = unit: "${unit}.service";
+    in {
+    # set up user configuration before first login
+    systemd.services = mkMerge (map (user: mkIf (user.config.fetch != null) {
+      "${check user}" = {
+        description = "check home configuration for ${user.name}";
         wantedBy = [ "multi-user.target" ];
         unitConfig = {
           # path must be absolute!
           # <https://www.freedesktop.org/software/systemd/man/systemd.unit.html#ConditionArchitecture=>
-          ConditionPathExists = "!${home user}/${cfg.path}/.git";
+          ConditionPathExists = "!${user.home}/${user.config.path}/.git";
         };
         serviceConfig = {
-          User = user;
+          User = user.name;
           SyslogIdentifier = check user;
           # systemd docs say that not specifying `Type` and `ExecStart` implies
           # `Type=oneshot`, but in reality it still complains if `ExecStart` is
@@ -66,9 +64,9 @@ in
           Type = "oneshot";
           ExecStart = "${coreutils}/bin/true";
         };
-      }) users //
-      mapAttrs' (user: cfg: nameValuePair (initialise user) {
-        description = "initialise home-manager configuration for ${user}";
+      };
+      "${initialise user}" = {
+        description = "initialise home-manager configuration for ${user.name}";
         # do not allow login before setup is finished. after first boot the
         # process takes a long time, and the user would log into a broken
         # environment.
@@ -82,23 +80,24 @@ in
         requires = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
         path = [ git ];
         serviceConfig = {
-          User = user;
+          User = user.name;
           Type = "oneshot";
           SyslogIdentifier = initialise user;
           ExecStart = let
             script = writeShellScriptBin (initialise user) ''
               set -e
-              mkdir -p ${home user}/${cfg.path}
-              cd ${home user}/${cfg.path}
+              mkdir -p ${user.home}/${user.config.path}
+              cd ${user.home}/${user.config.path}
               git init
-              git remote add origin ${cfg.fetch}
-              git remote set-url origin --push ${cfg.push}
+              git remote add origin ${user.config.fetch}
+              git remote set-url origin --push ${user.config.push}
               git fetch
-              git checkout ${cfg.branch} --force
-              ${home user}/${cfg.path}/${cfg.install}
+              git checkout ${user.config.branch} --force
+              ${user.config.install}
             ''; in "${script}/bin/${(initialise user)}";
+          };
         };
-      }) users);
+      }) (attrValues config.users.users));
 
     # this is a user-specific requirement, but needs to be supported by the
     # system for fully-automatic bootstrapping *before* first login. not sure
