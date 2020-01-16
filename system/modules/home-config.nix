@@ -46,6 +46,8 @@ in
     in {
     # set up user configuration before first login
     systemd.services = mkMerge (map (user: mkIf (user.config.fetch != null) {
+      # skip initialisation early on boot, before waiting for the network, if
+      # git repository appears to be in place.
       "${check user}" = {
         description = "check home configuration for ${user.name}";
         wantedBy = [ "multi-user.target" ];
@@ -77,7 +79,7 @@ in
         # that installation performs `nix` operations and those usually need to
         # fetch remote data
         after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
-        requires = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
+        bindsTo = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
         path = [
           git
           nix # for nix-shell
