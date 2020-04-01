@@ -10,6 +10,8 @@
     ./thinkpad.nix
   ];
 
+  services.logind.lidSwitch = "hibernate";
+
   services.xserver = {
     enable = true;
     displayManager.lightdm.enable = true;
