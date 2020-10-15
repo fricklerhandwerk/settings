@@ -28,25 +28,3 @@ Keep the extranal storage plugged in. After rebooting a user logging in should h
 
 Primary objective is to fully replace my macOS installations and the occasional Ubuntu with a fully reproducible NixOS.
 
-## PRs
-
-- nixos-hardware: add declarative option to README
-- nixpkgs: user-actkbd (fix pulseaudio)
-- nixpkgs: use `-I` values in `nixos-rebuild edit`
-- nix: export revision date in `builtins.fetchGit`
-- nixpkgs: do not override `nixos-config` with `$NIXOS_CONFIG`
-- nixpkgs: update `NIXOS_LUSTRATE` manual to use `nixos-install`
-
-## to do
-
-- hard disk partitioning/formatting as part of installation script
-- add system closure to installation image (reduce time to first boot)
-- include `home-manager` packages in installation image (reduce time to first login)
-- include secrets in installation image
-- full machine image from configuration (`dd` to target disk and run)
-- separate repositories for machine and user config
-- notify on low battery
-- hibernate on critical battery
-- hibernate after suspend
-- encrypted system partition
-- manage machines with NixOps
