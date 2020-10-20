@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
 #! nix-shell -i fish -p fish -p coreutils -p git
 
-set current (dirname (realpath (status current-filename))
+set current (dirname (realpath (status current-filename)))
 nix-build $current/common/iso.nix
