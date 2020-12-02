@@ -3,7 +3,7 @@
 # install NixOS over Debian 10, following and simplifying
 # <https://nixos.org/nixos/manual/#sec-installing-from-other-distro>
 
-set -e -o pipefail
+set -o pipefail -o errtrace
 
 network_config() {
   # capture networking configuration from current machine.
@@ -71,21 +71,30 @@ hardware_config() {
   sed "${line}i\\  boot.loader.grub.device = \"${partition//[[:digit:]]/}\";"
 }
 
+cleanup() {
+  rv=$?
+  for i in `seq 1 10`
+    do
+      userdel nixbld$i
+    done
+  groupdel nixbld
+  userdel --remove temp
+  rm -rf /etc/nix /nix /root/.nix-profile /root/.nix-defexpr /root/.nix-channels /etc/profile.d/nix.sh*
+  exit $?
+}
+
+trap cleanup ERR
+
 # `git` is required for `builtins.fetchGit`
-apt-get install -y curl git
+apt-get install -y curl git rsync
 
-# XXX: this is something the `nix` installation script should be doing. see
-# this stalled pull request for more frustration:
-# <https://github.com/NixOS/nix/pull/1565>
-getent group | grep nixbld || groupadd nixbld -g 30000
-for i in {1..10}
-  do
-    getent passwd | grep nixbld$i || \
-    useradd -c "Nix build user $i" -d /var/empty -g nixbld -G nixbld \
-      -u `expr 30000 + $i` -M -N -r -s "$(which nologin)" nixbld$i
-  done
+# create regular user with root permissions, since `nix` installer refuses to
+# run as root:
+# https://github.com/NixOS/nix/blob/e5cf501c774bad1dfcde1aff9af0c5fc8c0d333d/scripts/install-multi-user.sh#L277-L281
+useradd -m temp -G sudo
+echo "temp ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-curl https://nixos.org/nix/install | $SHELL
+su -s /bin/bash - temp -c "sh <(curl -L https://nixos.org/nix/install) --daemon"
 
 source ~/.nix-profile/etc/profile.d/nix.sh
 

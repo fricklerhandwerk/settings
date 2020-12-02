@@ -5,13 +5,14 @@
 
 ## PREPARATION
 # 1. install Debian 10 as KVM guest
-# 2. `ssh-copy-id` your key to the machine and set up `ssh` to use the correct
-#    key with the machine
+# 2. `ssh-copy-id -i ~/.ssh/<key> root@<host>` your key to the machine and
+#    set up your local `ssh` to use the correct key for `root@<host>`
 
 set self (status current-filename)
 
 if not set -q argv[1]
   echo "Usage: $self [<username>@]<host> <machine>" >&2
+  echo "       where <username> is usually `root`" >&2
   exit
 end
 
