@@ -11,6 +11,11 @@
 
   nix.nixPath = [
     # NOTE: updated values are only available on a fresh user session
+    # TODO: this may not be smart after all. maybe there should be a level of
+    # indirection in between, just as for `nixos-config`. and then there is no
+    # need to have a `./nixos/default.nix` any more. `nixos-rebuild` would work
+    # off `$NIX_PATH`, and the installation script can have the right variables
+    # set explicitly.
     "nixpkgs=${(import ./nixpkgs.nix)}"
     # XXX: spell out the filename for `nixos-rebuild edit` to work
     "nixos-config=${toString ../machines}/${config.networking.hostName}/default.nix"
