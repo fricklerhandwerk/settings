@@ -1,0 +1,37 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i fish -p fish -p rsync -p git
+
+# deploy configuration to machine.
+#
+# this is working around `nixops`, because it can neither evaluate a
+# Linux-targeted configuraton on Darwin nor build it without some kind of
+# virtualization.
+#
+# `nixops` would evaluate the configuration and send the evaluated expression
+# to a build server (e.g. a local Docker container), and from there push the
+# result to the target.
+#
+# this script pushes the configuration *source* to the
+# target and makes it build locally. this is acceptable as long as there is no
+# production load and we do not regularly switch compile-only dependencies.
+
+set self (status current-filename)
+set src (dirname (realpath $self))
+
+if not set -q argv[1]; or not test -d $machines/$argv[1]
+  echo "specify a machine:" >&2
+  for i in (ls -d $src/machines/*/)
+    echo (basename $i) >&2
+  end
+  exit 1
+end
+
+set machine $argv[1]
+set base /etc
+
+rsync -ai $src $machine:$base/nixos --rsync-path="sudo rsync" \
+      --files-from=(git -C $src ls-files | psub) --delete
+
+ssh $machine \
+    "sudo nixos-rebuild switch --show-trace \
+    -I nixpkgs=$base -I nixos-config=$base/nixos/machines/$machine/"
