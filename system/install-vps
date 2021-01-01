@@ -5,8 +5,9 @@
 
 ## PREPARATION
 # 1. install Debian 10 as KVM guest
-# 2. `ssh-copy-id -i ~/.ssh/<key> root@<host>` your key to the machine and
-#    set up your local `ssh` to use the correct key for `root@<host>`
+# 2. (optional) `ssh-copy-id -i ~/.ssh/<key> root@<host>` your key to the
+#    machine and set up your local `ssh` to use the correct key for
+#    `root@<host>`. this is to avoid entering your `root` password many times.
 
 set self (status current-filename)
 
@@ -30,17 +31,6 @@ end
 set target $argv[1]
 set machine $argv[2]
 set path /etc/nixos
-
-# check `ssh` connection
-if not ssh -qo "BatchMode=yes" $target exit
-  # FIXME: `ssh-copy-id` does not respect `~/.ssh/config`, so just doing
-  # `ssh-copy-id $target` cannot be expected to work. see this sad bug report:
-  # <http://lists.mindrot.org/pipermail/openssh-bugs/2014-September/013695.html>
-  # maybe I will some day submit a pull request to fix this, but for now just
-  # make sure you have key-based authentication working.
-  echo "Please set up `ssh` keys for $target with `ssh-copy-id`" >&2
-  exit
-end
 
 echo "mkdir -p $path" | ssh $target
 scp -r $current/* $target:$path
