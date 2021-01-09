@@ -79,7 +79,8 @@ in
         # that installation performs `nix` operations and those usually need to
         # fetch remote data
         after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
-        bindsTo = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
+        bindsTo = [ "nix-daemon.socket" "network-online.target" ];
+        requires = [ (service (check user)) ];
         path = [
           git
           nix # for nix-shell
