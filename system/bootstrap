@@ -1,9 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i fish \
-# -p fish \
-# -p git \
-# -p gpg \
-# -p gitAndTools.gitRemoteGcrypt
+#! nix-shell -i fish -p fish -p git -p gnupg -p gitAndTools.gitRemoteGcrypt
 
 # bootstrap by running this script from USB stick with GPG keys to encrypted
 # repository with system configuration.
@@ -14,7 +10,7 @@
 
 set current (dirname (readlink -f (status -f)))
 
-gpg --import $current/gpg.asc --homedir (mktemp -d)
+gpg --homedir (mktemp -d) --import $current/gpg.asc
 
 set temp (mktemp -d)
 git clone gcrypt::https://github.com/fricklerhandwerk/nixos $temp
