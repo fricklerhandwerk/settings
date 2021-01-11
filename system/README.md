@@ -17,9 +17,19 @@ Download a NixOS installation image from <https://nixos.org/nixos/download.html>
 ## bootstrapping
 
 - boot NixOS image from USB
-- format the installation disk appropriately[1] and mount the target file system under `/mnt`
+- format the installation disk appropriately[1]
+- mount the target file system under `/mnt`:
+  
+    sudo mount /dev/sda4 /mnt
+    sudo mkdir -p /mnt/boot
+    sudo mount /dev/sda2 /mnt/boot
+
 - mount external storage with GPG private key to this repository
-- run `$external/bootstrap <machine>` and respond to password prompts
+
+    sudo mkdir /usb
+    sudo mount /dev/sdc1 /usb
+
+- run `/usb/bootstrap <machine>` and respond to the GPG password prompt
 
 Keep the external storage plugged in until logged in. After rebooting a user logging in should have its `home-manager` configuration active as specified in the `home-config` option.
 
