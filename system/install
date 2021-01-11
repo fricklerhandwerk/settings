@@ -9,7 +9,7 @@
 
 set self (status current-filename)
 
-argparse -n $self --min-args 1 --max-args 1 p/partition f/format r/root= -- $argv; or exit
+argparse -n (basename $self) --min-args 1 --max-args 1 p/partition f/format r/root= -- $argv; or exit
 
 set current (dirname (realpath $self))
 set machines $current/machines
@@ -55,7 +55,7 @@ end
 set target $root/etc/nixos
 if test $current != $target
       mkdir -p $target
-  and cp -r $current $target
+  and cp -a $current/. $target
   and cd $target
   and chown -R :wheel .
   # fix group for new files with sticky bit
@@ -64,7 +64,8 @@ if test $current != $target
   and setfacl -d -m group::rwx .
   or exit
 
-  exec $target/$self $argv
+  set filename (basename $self)
+  exec $target/$filename $argv
 end
 
 # XXX: `nix-shell` uses `$system` to denote the operating system, while
@@ -74,4 +75,4 @@ end
 set -e system
 
 # XXX: `nixos-install` overrides `-I nixos-config=...` with `$NIXOS_CONFIG`
-env NIXOS_CONFIG=$machines/$machine nixos-install -I nixpkgs=../$current --root $root
+env NIXOS_CONFIG=$machines/$machine nixos-install -I nixpkgs=$current/.. --root $root
