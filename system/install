@@ -28,20 +28,20 @@ set machine $argv[1]
 # nix-instantiate --eval $machines/$machine/boot.nix -A fileSystems --strict --json | jq ...
 # don't forget swap and BIOS boot partitions!
 
-if $_flag_partition
+if set -q _flag_partition
   # TODO: partition target disk. here we should use a default layout for all
   # machines, such as the one described in [1].
   # [1]: <https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Disks#Default:_Using_parted_to_partition_the_disk>
 end
 
-if $_flag_format
+if set -q _flag_format
   # TODO: format target disk
   # some file systems could be auto-formatted by NixOS [1], but this is not
   # necessarily safe or useful for the purpose here
   # [1]: <https://github.com/NixOS/nixpkgs/blob/release-19.09/nixos/modules/tasks/filesystems.nix#L79-L86>
 end
 
-set root /mnt; set -q $_flag_root; and set root $_flag_root
+set root /mnt; set -q _flag_root; and set root $_flag_root
 # TODO: mount target partitions, this is just a safety stopgap
 if not mount | grep $root > /dev/null
   echo "target partition not mounted under $root" >&2
@@ -53,7 +53,7 @@ end
 # NOTE: target directory *must* be named `nixos` due to how the original
 # `nixos-rebuild` works.
 set target $root/etc/nixos
-if $current != $target
+if test $current != $target
       mkdir -p $target
   and cp -r $current $target
   and cd $target
