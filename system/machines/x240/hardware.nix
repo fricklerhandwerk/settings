@@ -1,7 +1,6 @@
 { ... }:
 {
   nix.maxJobs = 4;
-  powerManagement.cpuFreqGovernor = "powersave";
 
   boot = {
     initrd.availableKernelModules = [
