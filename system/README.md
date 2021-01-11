@@ -19,7 +19,7 @@ Download a NixOS installation image from <https://nixos.org/nixos/download.html>
 - boot NixOS image from USB
 - format the installation disk appropriately[1] and mount the target file system under `/mnt`
 - mount external storage with GPG private key to this repository
-- run `$external/bootstrap` and respond to password prompts
+- run `$external/bootstrap <machine>` and respond to password prompts
 
 Keep the external storage plugged in until logged in. After rebooting a user logging in should have its `home-manager` configuration active as specified in the `home-config` option.
 
