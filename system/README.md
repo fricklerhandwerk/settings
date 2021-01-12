@@ -18,6 +18,7 @@ Download a NixOS installation image from <https://nixos.org/nixos/download.html>
 
 - boot NixOS image from USB
 - format the installation disk appropriately[1]
+  - make sure to use an `msdos` partition table for BIOS systems!
 - mount the target file system under `/mnt`:
   
     sudo mount /dev/sda4 /mnt
