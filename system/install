@@ -75,4 +75,4 @@ end
 set -e system
 
 # XXX: `nixos-install` overrides `-I nixos-config=...` with `$NIXOS_CONFIG`
-env NIXOS_CONFIG=$machines/$machine nixos-install -I nixpkgs=$current/.. --root $root
+env NIXOS_CONFIG=$machines/$machine nixos-install -I nixpkgs=$current/.. --root $root --no-root-passwd
