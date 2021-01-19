@@ -21,6 +21,8 @@
     "nixos-config=${toString ../machines}/${config.networking.hostName}/default.nix"
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   environment.systemPackages = with pkgs; [
     neovim
     git
