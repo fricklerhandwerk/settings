@@ -11,5 +11,9 @@
   security.pam.services.su.requireWheel = true;
 
   networking.firewall.allowPing = true;
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    passwordAuthentication = false;
+    permitRootLogin = "prohibit-password";
+  };
 }
