@@ -11,8 +11,11 @@
 #    `nixos` (only slightly less annoying).
 
 {
-  system ? builtins.currentSystem,
-  configuration ? <nixos-config>,
-  ...
+  system ? builtins.currentSystem
+, configuration ? <nixos-config>
+, ...
 }:
-import "${import ./common/nixpkgs.nix}/nixos" { inherit system configuration; }
+let
+  version = (import <nixpkgs/nixos> { inherit system configuration; }).config.system.stateVersion;
+in
+import ''${import (./nixpkgs + "/${version}.nix")}/nixos'' { inherit system configuration; }

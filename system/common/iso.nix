@@ -1,5 +1,5 @@
 let
-  nixpkgs = import ./nixpkgs.nix;
+  nixpkgs = import ../nixpkgs/20.09.nix;
   configuration = { pkgs, ... }: {
     imports = [
       "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"

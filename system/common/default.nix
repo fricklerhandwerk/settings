@@ -3,20 +3,14 @@
   imports = [
     ../modules/home-config.nix
   ];
-  system.stateVersion = "19.03";
-  # having the date of the revision would be nice, but `builtins.fetchGit` does
-  # not export that attribute and there is no other meaningful way to get it
-  # without re-fetching a significant portion of the repository
-  system.nixos.versionSuffix = "-${(import ./nixpkgs.nix).shortRev}";
+  system.stateVersion = "20.09";
 
   nix.nixPath = [
     # NOTE: updated values are only available on a fresh user session
-    # TODO: this may not be smart after all. maybe there should be a level of
-    # indirection in between, just as for `nixos-config`. and then there is no
-    # need to have a `./nixos/default.nix` any more. `nixos-rebuild` would work
-    # off `$NIX_PATH`, and the installation script can have the right variables
-    # set explicitly.
-    "nixpkgs=${(import ./nixpkgs.nix)}"
+    # TODO: this should point to the mutable file, but it needs to be separately
+    # deployed to the target machine when we manage it with NixOps. ideally we
+    # would only copy the files actually needed for that machine.
+    ''nixpkgs=${import (../nixpkgs + "/${config.system.stateVersion}.nix")}''
     # XXX: spell out the filename for `nixos-rebuild edit` to work
     "nixos-config=${toString ../machines}/${config.networking.hostName}/default.nix"
   ];
