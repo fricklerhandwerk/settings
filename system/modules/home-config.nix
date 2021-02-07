@@ -2,40 +2,45 @@
 with pkgs;
 let
   users = config.users.users;
-  home-config = with lib; with types; { config, ... }: {
-    options.config = {
+  home-config = { lib, ... }: {
+    options.config = with lib; mkOption {
       description = "user's home configuration repository";
-      fetch = mkOption {
-        type = nullOr str;
-        default = null;
-        description = "fetch URL for git repository with user configuration";
-      };
-      push = mkOption {
-        type = nullOr str;
-        default = config.fetch;
-        description = "push URL for git repository, if it differs";
-      };
-      branch = mkOption {
-        type = str;
-        default = "master";
-        description = "branch in repository to clone";
-      };
-      path = mkOption {
-        type = str;
-        default = ".config";
-        description = "clone path for configuration repository, relative to user's $HOME"; };
-      install = mkOption {
-        type = str;
-        default = "./install";
-        description = "installation command";
-      };
+      default = null;
+      type = with types; nullOr (submodule ({config, ...}: {
+        options = {
+          fetch = mkOption {
+            type = str;
+            description = "fetch URL for git repository with user configuration";
+          };
+          push = mkOption {
+            type = str;
+            default = config.fetch;
+            description = "push URL for git repository, if it differs";
+          };
+          branch = mkOption {
+            type = str;
+            default = "master";
+            description = "branch in repository to clone";
+          };
+          path = mkOption {
+            type = str;
+            default = ".config";
+            description = "clone path for configuration repository, relative to user's $HOME";
+          };
+          install = mkOption {
+            type = str;
+            default = "./install";
+            description = "installation command";
+          };
+        };
+      }));
     };
   };
 in
 {
   options = with lib; with types; {
     users.users = mkOption {
-      type = loaOf (submodule home-config);
+      type = attrsOf (submodule home-config);
     };
   };
   config = with builtins; with lib;
@@ -45,7 +50,7 @@ in
       service = unit: "${unit}.service";
     in {
     # set up user configuration before first login
-    systemd.services = mkMerge (map (user: mkIf (user.config.fetch != null) {
+    systemd.services = mkMerge (map (user: mkIf (user.isNormalUser && user.config != null) {
       # skip initialisation early on boot, before waiting for the network, if
       # git repository appears to be in place.
       "${check user}" = {
