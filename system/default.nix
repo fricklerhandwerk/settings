@@ -16,6 +16,6 @@
 , ...
 }:
 let
-  version = (import <nixpkgs/nixos> { inherit system configuration; }).config.system.stateVersion;
+  version = (import ((import ./nixpkgs/20.09.nix) + "/nixos") { inherit system configuration; }).config.system.stateVersion;
 in
-import ''${import (./nixpkgs + "/${version}.nix")}/nixos'' { inherit system configuration; }
+import ((import (./nixpkgs + "/${version}.nix")) + "/nixos") { inherit system configuration; }
