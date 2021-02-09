@@ -5,15 +5,19 @@
   ];
   system.stateVersion = "20.09";
 
-  nix.nixPath = [
-    # NOTE: updated values are only available on a fresh user session
-    # TODO: this should point to the mutable file, but it needs to be separately
-    # deployed to the target machine when we manage it with NixOps. ideally we
-    # would only copy the files actually needed for that machine.
-    ''nixpkgs=${import (../nixpkgs + "/${config.system.stateVersion}.nix")}''
-    # XXX: spell out the filename for `nixos-rebuild edit` to work
-    "nixos-config=${toString ../machines}/${config.networking.hostName}/default.nix"
-  ];
+  nix = {
+    nixPath = [
+        # NOTE: updated values are only available on a fresh user session
+        # TODO: this should point to the mutable file, but it needs to be separately
+        # deployed to the target machine when we manage it with NixOps. ideally we
+        # would only copy the files actually needed for that machine.
+        # NOTE: updated values are only available on a fresh user session
+        ''nixpkgs=${import (../nixpkgs + "/${config.system.stateVersion}.nix")}''
+        # XXX: spell out the filename for `nixos-rebuild edit` to work
+        "nixos-config=${toString ../machines}/${config.networking.hostName}/default.nix"
+    ];
+    trustedUsers = [ "root" "@wheel" ];
+  };
 
   nixpkgs.config.allowUnfree = true;
 
