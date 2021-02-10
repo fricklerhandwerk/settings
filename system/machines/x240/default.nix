@@ -3,6 +3,7 @@
   imports = [
     ../../common
     ../../common/local.nix
+    ../../common/x11.nix
     ./boot.nix
     ./audio.nix
     ./backlight.nix
@@ -16,12 +17,4 @@
   environment.etc."systemd/sleep.conf".text = ''
     HibernateDelaySec=20
   '';
-
-  services.xserver = {
-    enable = true;
-    displayManager.lightdm.enable = true;
-    xkbOptions = "altwin:swap_lalt_lwin";
-  };
-  i18n.consoleUseXkbConfig = true;
-  hardware.opengl.driSupport32Bit = true;
 }
