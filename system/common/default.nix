@@ -19,7 +19,15 @@
     trustedUsers = [ "root" "@wheel" ];
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    config.allowUnfree = true;
+    overlays = let
+      branches = self: super: {
+        master = super.callPackage (import ../nixpkgs/master.nix) { inherit (super) system config; };
+        unstable = super.callPackage (import ../nixpkgs/unstable.nix) { inherit (super) system config; };
+      };
+    in [ branches ];
+  };
 
   environment.systemPackages = with pkgs; [
     neovim
