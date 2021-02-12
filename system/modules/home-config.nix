@@ -69,6 +69,7 @@ in
           # not defined, even if `Type=oneshot` is explicitly set.
           # <https://www.freedesktop.org/software/systemd/man/systemd.service.html#Type=>
           Type = "oneshot";
+          RemainAfterExit = true;
           ExecStart = "${coreutils}/bin/true";
         };
       };
@@ -84,8 +85,7 @@ in
         # that installation performs `nix` operations and those usually need to
         # fetch remote data
         after = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
-        bindsTo = [ "nix-daemon.socket" "network-online.target" ];
-        requires = [ (service (check user)) ];
+        bindsTo = [ (service (check user)) "nix-daemon.socket" "network-online.target" ];
         path = [
           git
           nix # for nix-shell
