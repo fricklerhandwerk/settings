@@ -11,6 +11,5 @@
     ./thinkpad.nix
   ];
 
-  services.logind.lidSwitch = "suspend-then-hibernate";
-  systemd.sleep.extraConfig = "HibernateDelaySec=180";
+  services.logind.lidSwitch = "hibernate";
 }
