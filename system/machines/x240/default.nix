@@ -9,6 +9,7 @@
     ./backlight.nix
     ./hardware.nix
     ./thinkpad.nix
+    ./trackpad.nix
   ];
 
   services.logind.lidSwitch = "hibernate";
