@@ -2,8 +2,7 @@
 {
   imports = [
     ../.
-    ./dunst.nix
-    ./xmonad.nix
+    ../../common/kitty.nix
   ];
 
   home.packages = with pkgs; [
@@ -15,10 +14,4 @@
     winetricks
     unstable.discord
   ];
-  services.screen-locker = {
-    enable = true;
-    lockCmd = "${pkgs.xsecurelock}/bin/xsecurelock";
-  };
-  # auto-mount external storage
-  services.udiskie.enable = true;
 }
