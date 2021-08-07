@@ -56,7 +56,7 @@
         vim-isort
       ];
       extraPackages = with pkgs; [
-        (unstable.python3.withPackages (ps: [
+        (python3.withPackages (ps: [
            ps.pyls-mypy
            ps.pyls-isort
            ps.pyls-black
