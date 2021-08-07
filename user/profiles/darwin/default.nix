@@ -18,6 +18,7 @@
 
   home.packages = with pkgs; [
     umlet
+    vscode
     (pkgs.callPackage ./nixos-rebuild.nix {})
   ];
 

@@ -10,6 +10,7 @@
     qview
     tor-browser
     vlc
+    vscode
     wine
     winetricks
     unstable.discord
