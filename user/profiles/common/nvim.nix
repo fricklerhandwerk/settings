@@ -64,10 +64,6 @@
         gotools
         go
         golangci-lint
-        xpdf
       ];
-  };
-  nixpkgs.config = {
-    permittedInsecurePackages = [ "xpdf-4.02" ];
   };
 }
