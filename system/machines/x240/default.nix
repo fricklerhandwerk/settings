@@ -12,4 +12,5 @@
 
   services.logind.lidSwitch = "hibernate";
   hardware.pulseaudio.enable = true;
+  virtualisation.virtualbox.host.enable = true;
 }
