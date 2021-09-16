@@ -3,7 +3,7 @@
   imports = [
     ../modules/home-config.nix
   ];
-  system.stateVersion = "20.09";
+  system.stateVersion = "21.05";
 
   nix = {
     nixPath = [
