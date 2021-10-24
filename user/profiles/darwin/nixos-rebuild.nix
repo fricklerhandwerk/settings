@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 let
-  path = pkgs.path + /nixos/modules/installer/tools;
-  fallback = import (path + /nix-fallback-paths.nix);
+  path = pkgs.path + /pkgs/os-specific/linux/nixos-rebuild;
+  fallback = import (pkgs.path + /nixos/modules/installer/tools/nix-fallback-paths.nix);
 in
 (pkgs.substituteAll {
   dir = "bin";

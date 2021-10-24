@@ -32,7 +32,7 @@
       # this not only introduces bootstrapping questions, but is also
       # impossible in `home-manager` 19.09 since that module option is not yet
       # available there.
-      set -p fish_function_path ${pkgs.fish-foreign-env}/share/fish-foreign-env/functions
+      set -p fish_function_path ${pkgs.fishPlugins.foreign-env}/share/fish/vendor_functions.d
       fenv source ~/.nix-profile/etc/profile.d/nix.sh
       set -e fish_function_path[1]
     '';
