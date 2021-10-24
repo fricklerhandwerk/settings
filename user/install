@@ -13,6 +13,10 @@ fi
 
 machine=$current/machines/$1
 
+# remove symlink, which may lead nowhere on fresh installation
+# and produce an obscure error of not finding some store path
+rm -f $current/nixpkgs/config.nix
+
 nix-shell -E \
 "with import <nixpkgs> {}; mkShell { buildInputs = [ (callPackage $current/overlays/home-manager.nix {}) ]; }" \
 --run "home-manager -f $machine switch"
