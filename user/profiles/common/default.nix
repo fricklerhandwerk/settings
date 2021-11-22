@@ -24,6 +24,8 @@
     rsync
     wget
     unstable.youtube-dl
+    pandoc
+    texlive.combined.scheme-medium
   ];
   home.sessionVariables = {
     EDITOR = "nvim";
