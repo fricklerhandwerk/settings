@@ -27,5 +27,17 @@
       gp = "git push";
       gco = "git checkout";
     };
+    interactiveShellInit = ''
+      function upload
+        rsync -a --partial --progress $argv webgo:www/fricklerhandwerk/temp/
+        for arg in $argv
+          echo https://fricklerhandwerk.de/temp/(basename $arg)
+        end
+      end
+      # update remote machine's configuration
+      function rebuild
+        nixos-rebuild --target-host root@$argv[1] switch -I nixos-config=$HOME/src/nixos/machines/$argv[1] -I nixpkgs=$HOME/src/nixos --show-trace --option tarball-ttl 0
+      end
+    '';
   };
 }
