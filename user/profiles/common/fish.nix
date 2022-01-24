@@ -7,6 +7,12 @@
       ll = "ls -lah --color=tty";
       ".." = "cd ..";
     };
+    plugins = with pkgs.fishPlugins; [
+      {
+        name = "foreign-env";
+        src = foreign-env.src;
+      }
+    ];
     shellAbbrs = {
       gl = "git log";
       gsh = "git show";

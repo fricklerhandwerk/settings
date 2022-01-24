@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 with pkgs;
 let
   script = writeScriptBin "fix-time-machine" (builtins.readFile ./fix-time-machine.sh);
@@ -7,7 +7,7 @@ let
     fixupPhase = ''
       patchShebangs $out/bin
       wrapProgram $out/bin/fix-time-machine \
-        --prefix PATH : "${stdenv.lib.makeBinPath [ ripgrep gnused ]}"
+        --prefix PATH : "${lib.makeBinPath [ ripgrep gnused ]}"
     '';
   });
 in

@@ -56,11 +56,6 @@
         vim-isort
       ];
       extraPackages = with pkgs; [
-        (python3.withPackages (ps: [
-           ps.pyls-mypy
-           ps.pyls-isort
-           ps.pyls-black
-        ]))
         gotools
         go
         golangci-lint
