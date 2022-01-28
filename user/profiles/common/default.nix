@@ -26,6 +26,7 @@
     unstable.youtube-dl
     pandoc
     texlive.combined.scheme-medium
+    emacs
   ];
   home.sessionVariables = {
     EDITOR = "nvim";
