@@ -14,6 +14,7 @@
       }
     ];
     shellAbbrs = {
+      e = "emacs";
       gl = "git log";
       gsh = "git show";
       gst = "git status";

@@ -16,6 +16,10 @@
     enable = true;
     nix-direnv.enable = true;
   };
+  home.sessionVariables = {
+    # enter environment silently
+    DIRENV_LOG_FORMAT="";
+  };
 
   home.packages = with pkgs; [
     coreutils
@@ -37,5 +41,6 @@
     EDITOR = "nvim";
     PAGER = "less";
   };
+  home.sessionPath = [ "${config.home.homeDirectory}/.emacs.d/bin" ];
   xdg.enable = true;
 }
