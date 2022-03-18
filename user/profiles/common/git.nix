@@ -44,6 +44,7 @@ in
         ff = false;
       };
       "mergetool \"nvim\"".cmd = "nvim -f -c \"Gdiff\" \"$MERGED\"";
+      hub.protocol = "https";
     };
     ignores = [ ".DS_Store" ];
   };
