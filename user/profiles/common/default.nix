@@ -36,6 +36,7 @@
     pandoc
     texlive.combined.scheme-medium
     emacs
+    sigtop
   ];
   home.sessionVariables = {
     EDITOR = "nvim";
