@@ -52,13 +52,16 @@
         vim-airline-themes
         NeoSolarized
         LanguageClient-neovim
+        vim-codefmt
         vim-go
         vim-isort
       ];
-      extraPackages = with pkgs; [
-        gotools
-        go
-        golangci-lint
-      ];
+    extraPackages = with pkgs; [
+      gotools
+      go
+      golangci-lint
+      nixpkgs-fmt
+      cpplint
+    ];
   };
 }
