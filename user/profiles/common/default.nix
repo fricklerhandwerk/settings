@@ -32,7 +32,7 @@
     ripgrep
     rsync
     wget
-    unstable.youtube-dl
+    (unstable.yt-dlp.override { withAlias = true; })
     pandoc
     texlive.combined.scheme-medium
     emacs
