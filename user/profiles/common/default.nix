@@ -10,7 +10,7 @@
   ];
 
   nixpkgs.config = import ./nixpkgs-config.nix;
-  xdg.configFile."nixpkgs/config.nix".text = pkgs.lib.generators.toPretty {} config.nixpkgs.config;
+  xdg.configFile."nixpkgs/config.nix".text = pkgs.lib.generators.toPretty { } config.nixpkgs.config;
 
   programs.direnv = {
     enable = true;
@@ -18,7 +18,7 @@
   };
   home.sessionVariables = {
     # enter environment silently
-    DIRENV_LOG_FORMAT="";
+    DIRENV_LOG_FORMAT = "";
   };
 
   home.packages = with pkgs; [
