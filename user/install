@@ -17,7 +17,10 @@ machine=$current/machines/$1
 # and produce an obscure error of not finding some store path
 rm -f $current/nixpkgs/config.nix
 
+# all the following command line arguments are expected to be intended for Nix and passed to each nested invocation
+shift
+
 # FIXME: invoking `home-manager` with `env NIX_PATH` works around an error where `NIX_PATH` is expected to be set, but isn't because the current installer does not set it.
 nix-shell -E \
 "with import <nixpkgs> {}; mkShell { buildInputs = [ (callPackage $current/overlays/home-manager.nix {}) ]; }" \
---run "env NIX_PATH= home-manager -f $machine switch -I nixpkgs=$current/../system/nixpkgs" -I nixpkgs=$current/../system/nixpkgs
+--run "env NIX_PATH= home-manager -f $machine switch -I nixpkgs=$current/../system/nixpkgs $@" -I nixpkgs=$current/../system/nixpkgs $@
