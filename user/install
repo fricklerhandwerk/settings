@@ -1,5 +1,5 @@
 #! /usr/bin/env nix-shell
-#! nix-shell -i bash -p bash -p coreutils -p nix
+#! nix-shell -i bash -p bash coreutils nix git
 
 current=$(dirname $(readlink --canonicalize-existing $0))
 
