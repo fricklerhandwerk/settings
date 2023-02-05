@@ -19,4 +19,4 @@ rm -f $current/nixpkgs/config.nix
 
 nix-shell -E \
 "with import <nixpkgs> {}; mkShell { buildInputs = [ (callPackage $current/overlays/home-manager.nix {}) ]; }" \
---run "home-manager -f $machine switch"
+--run "home-manager -f $machine switch -I nixpkgs=$current/../system/nixpkgs" -I nixpkgs=$current/../system/nixpkgs
