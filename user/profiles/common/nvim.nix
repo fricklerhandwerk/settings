@@ -9,7 +9,6 @@
       with pkgs;
       with vimPlugins;
       let
-        unstable = pkgs.unstable.vimPlugins;
         incsearch-fuzzy = vimUtils.buildVimPlugin {
           pname = "incsearch-fuzzy";
           version = "2016-12-15";

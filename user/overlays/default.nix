@@ -1,19 +1,21 @@
 { pkgs, ... }:
 let
-  unstable = import ./unstable.nix;
+  nixpkgs = import ./nixpkgs.nix;
   home-manager = self: super: {
-   home-manager = pkgs.callPackage ./home-manager.nix {};
+    home-manager = super.callPackage ./home-manager.nix { };
   };
-  nixops = import ./nixops.nix;
+  nixops = self: super: {
+    nixos = import ./nixops.nix;
+  };
   tor-browser = import ./tor-browser.nix;
   wine = import ./wine.nix;
   sigtop = self: super: {
-    sigtop = pkgs.callPackage ./sigtop.nix {};
+    sigtop = super.callPackage ./sigtop.nix { };
   };
 in
 {
   nixpkgs.overlays = [
-    unstable
+    nixpkgs
     home-manager
     nixops
     tor-browser

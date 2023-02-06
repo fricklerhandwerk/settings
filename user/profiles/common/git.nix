@@ -51,6 +51,6 @@ in
   home.packages = with pkgs; [
     gitAndTools.hub
     gitAndTools.gitRemoteGcrypt
-    unstable.gitAndTools.git-filter-repo
+    gitAndTools.git-filter-repo
   ];
 }
